@@ -4,13 +4,45 @@ import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
+import api from "@/lib/axios";
 
-const SearchInput = () => {
+// interface SearchInputProps {
+// 	onSearch: (data: any) => void;
+// }
+
+const SearchInput = ({ onSearch }: { onSearch: (data: any) => void }) => {
 	const [value, setValue] = useState("");
 	const debouncedValue = useDebounce(value);
-
 	const router = useRouter();
 	const pathname = usePathname();
+
+	useEffect(() => {
+		if (debouncedValue) {
+			handleWordToSearch();
+		}
+	}, [debouncedValue]);
+
+	const handleWordToSearch = async () => {
+		try {
+			const { data } = await api.get('https://be.cursus-jp.duckdns.org/api/vocabularies/search/api', {
+				params: { word: value },
+			});
+			console.log('Translation data:', data);
+			if (data && typeof onSearch === 'function') {
+				onSearch(data); // Invoke onSearch with the fetched data
+			} else {
+				console.error('No data returned or onSearch is not a function');
+			}
+		} catch (error) {
+			console.error('Error fetching translation:', error);
+		}
+	};
+
+	const onkeydown = (e) => {
+		if (e.key === "Enter") {
+			handleWordToSearch();
+		}
+	};
 
 	return (
 		<div className="relative">
@@ -19,14 +51,12 @@ const SearchInput = () => {
 				onChange={(e) => setValue(e.target.value)}
 				value={value}
 				className="w-full md:w-[300px] pl-9 rounded-full bg-slate-100 focus-visible:ring-slate-200"
-				placeholder="Search for course"
+				placeholder="Search for vocabulary"
+				onKeyDown={onkeydown}
 			/>
+
 			<Suspense fallback={<div>Loading...</div>}>
-				<SearchHandler
-					debouncedValue={debouncedValue}
-					pathname={pathname}
-					router={router}
-				/>
+				<SearchHandler debouncedValue={debouncedValue} pathname={pathname} router={router} />
 			</Suspense>
 		</div>
 	);
@@ -47,7 +77,10 @@ const SearchHandler = ({ debouncedValue, pathname, router }: { debouncedValue: s
 			},
 			{ skipEmptyString: true, skipNull: true }
 		);
-		router.push(url);
+
+		if (router.asPath !== url) { // Prevent unnecessary pushes
+			router.push(url);
+		}
 	}, [debouncedValue, currentCategoryId, router, pathname]);
 
 	return null; // This component doesn't render anything itself

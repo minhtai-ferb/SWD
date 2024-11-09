@@ -24,7 +24,7 @@ export const isLoggedIn = async () => {
   if (await verifyToken(token) === true) {
 
     try {
-      const response = await getRefreshToken({accessToken: token, refreshToken: refreshToken});
+      const response = await getRefreshToken({ accessToken: token, refreshToken: refreshToken });
       console.log("Refresh token response: ", response);
       Cookies.set("jwtToken", response.data.accessToken);
       Cookies.set("refreshToken", response.data.refreshToken);
