@@ -13,7 +13,7 @@ api.interceptors.request.use(
     if (typeof window !== "undefined") {
       // Client-side code
       token = Cookies.get('jwtToken');
-      console.log("Client side cookies: ", token);
+      // console.log("Client side cookies: ", token);
     }
 
     if (token) {
