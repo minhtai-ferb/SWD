@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cursus-japanese",
+  "private_key_id": "da92604cc7d4e046546722975697baac6a59c259",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCpSC/+E6ybvQSB\n4GHzeSEEmI8Pdx63hMwtbPkIRSeVsCcBuYqeaV3xW3XHNt8BcugllGJRToDhrf/I\ntJezdg217uT/keab0w+3As4YOABOdoGu5+S/phWsBLR+2GkYpmaiSRSp7/p0eJJl\nWPeDjdsxKLbR2BMkJaviIdP71estizUXAaG78sjnzT2mpFSHmETTBQj4DzcD8ba5\nrd/2Tg9FM/T28YK16DGWIY+Kzk5j3puJCt8uK+P1vO+Z2z5eYcq2ympbyVgMginY\nt2TqFHM9Yc12c/V9ii2O7WTMhibsCY/jHXeMwhcXdyBi5wtmifvXtzDb4q6qE19c\n1FlGL/sJAgMBAAECggEAJO2G7qWrE0Q+Dfj9VSgY4FBJcQW60Szqf4RUpQ20724A\nbFtl1l3E7QhXHpClQEMpSj1e3z7BVbnn4QgoSbFYl1YYZXoV9Osrc/BsNhNNWdB3\nRMj4eShJdP+Hwl4COyrdm8xWciXUHIFK6knooK2a4dPwYcGBl3KSVt+rRzYougPX\nZuln7Dv5rDNdTHRhuNiJLvjMGx9YEXwqo6WP4pZ2yxiyZhZL1MuSxgJJbqSX9Z9n\nP2vUvbcc61PeHiHVETc4xyN+BCAmI7t5RLHg3yEPwhFN2/lJAJ1tbRHYDT8Nn2+1\n2t1R7R9XqS3qL+gjeSXN1ru6MrZ9jUuRUqHfb+6v6QKBgQDkcGva5+LlSlK0Z2Wa\nhtUrgCv4p85EI0IMKVzUbtdTMV50rovyy3nwtbhWBTTdNIfLbCgORLyH9i9xMwk6\nMWnDfcm6rP5lrQEj/R1GztgVLM2Gp48fJ5NJ/DmYNQ2IHcGhdh1MqtVG47ysJnGz\n0gkUV+LnXJHbpVu6awmAYt03tQKBgQC9tKLZ8zG+NJKn+lHbQpvLLfqTBfXqy8Ro\noGAF8te8eGfp3P/GNODqlXQTu0O/s3JWZ9dTfnkm3KFDdBlTRtRgY/blyPyrFui6\nbsXTfW1ckTffG1WF7bSG3L/wBukH1iCDk5O4fO19GQKw8TyCU6HhGyYcq2Xp03/P\nTsJimewihQKBgHyBBVe3AMQlgPQQUqEpEa/22IBavSIH8Wx9crnZe4Q9KRUBOQdo\nfRqDgGdpyQkzIzvsw9wa/IJB3FOfFE1iNxm0SilzNegmpbN+teEsxTqtQ4s7cdby\nE+XEEYPyjmB8j1c37/okNb/AScmt3lS6ifZLfEDLBDgpZNgylGgj+hvtAoGAZSfn\nFpTJV4UtFokyENqpvGPeE3vAL91L9AZgbYuaYhNKRbfkY0pbDHt5E/RtIdGMDGr+\ntLTh4UkQbKmBv5grMuLbCphrssdafd8HeciOAiglRMCMkAe6lZcsec8Vf2o8mCyf\nPmbPND+b4cIg49W4ohIZ9numslJm+qIioPU2pwkCgYEA4ja+HkOP0V/yHspHDIHP\nXpOljSSaPpVHoN6nv6TAHwZnOKT+CmX7UH9ve2KCj5Rd1zGkoApkHz1af6Q8ZYyg\nKGuXhqm8Jc3Thkh/D3rQOe4XrHaP3P9tZPMegG1/tLlv7c4gl52KwWZ9T7nxULXM\ntarfocCfwzNRO5ZK6CRb98g=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-35ufc@cursus-japanese.iam.gserviceaccount.com",
+  "client_id": "105561640170086757330",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-35ufc%40cursus-japanese.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
