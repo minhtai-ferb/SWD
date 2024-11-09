@@ -67,7 +67,7 @@ const NavbarRoutes = () => {
       <Toaster />
       {isSearchPage && (
         <div className="hidden md:block">
-          <SearchInput />
+          <SearchInput onSearch={(data) => console.log(data)} />
         </div>
       )}
       <div className="flex gap-x-2 ml-auto align-middle items-center">

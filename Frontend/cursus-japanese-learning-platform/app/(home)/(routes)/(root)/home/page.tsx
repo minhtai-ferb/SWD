@@ -31,8 +31,8 @@ const Home = () => {
           searchResults.data ? (
             <div>
               <h3>Translation Result:</h3>
-              <p><strong>Word:</strong> {searchResults.data.word}</p>
-              <p><strong>Meaning:</strong> {searchResults.data.meaning}</p>
+              <p><strong>Word:</strong> {searchResults.word}</p>
+              <p><strong>Meaning:</strong> {searchResults.meaning}</p>
             </div>
           ) : (
             <p>No valid translation data found.</p>
