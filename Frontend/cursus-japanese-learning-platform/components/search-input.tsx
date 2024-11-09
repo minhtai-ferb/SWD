@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense, useState, useEffect } from "react";
 import qs from "query-string";
 import { Search } from "lucide-react";
@@ -5,6 +7,7 @@ import { Input } from "./ui/input";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
 import api from "@/lib/axios";
+import { searchesForVocabularyAPI } from "@/actions/vocabulary-management";
 
 // interface SearchInputProps {
 // 	onSearch: (data: any) => void;
@@ -24,9 +27,7 @@ const SearchInput = ({ onSearch }: { onSearch: (data: any) => void }) => {
 
 	const handleWordToSearch = async () => {
 		try {
-			const { data } = await api.get('https://be.cursus-jp.duckdns.org/api/vocabularies/search/api', {
-				params: { word: value },
-			});
+			const { data } = await searchesForVocabularyAPI(value);
 			console.log('Translation data:', data);
 			if (data && typeof onSearch === 'function') {
 				onSearch(data); // Invoke onSearch with the fetched data
@@ -38,7 +39,7 @@ const SearchInput = ({ onSearch }: { onSearch: (data: any) => void }) => {
 		}
 	};
 
-	const onkeydown = (e) => {
+	const onkeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
 			handleWordToSearch();
 		}
