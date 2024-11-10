@@ -5,9 +5,20 @@ import { createChatForUser, getChatByUserId } from "@/actions/chat";
 
 const Page = () => {
   const [chatId, setChatId] = useState<string | null>(null);
-  const userId = "083a56ef-3d5a-4cdc-d90f-08dd00d9ac1e"; // Lấy từ context hoặc từ auth.
+  
+ 
+  const userData = localStorage.getItem("userData");
+  const userId = userData ? JSON.parse(userData).id : null;  
+
+  console.log("userId", userId);
+  console.log("LocalStorage", localStorage)
 
   useEffect(() => {
+    if (!userId) {
+      console.error("[Page] No userId found in localStorage");
+      return;
+    }
+
     const fetchChat = async () => {
       try {
         const response = await getChatByUserId(userId);
