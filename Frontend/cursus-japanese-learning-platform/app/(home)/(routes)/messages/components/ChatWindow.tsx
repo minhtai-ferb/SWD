@@ -1,5 +1,5 @@
 import { createMessages, getAllMessagesByChatId } from "@/actions/messages";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 type Message = {
     id: string;
@@ -15,6 +15,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const messagesEndRef = useRef<HTMLDivElement>(null); // Thêm ref cho cuối danh sách tin nhắn
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -36,129 +37,109 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
         }
     }, [chatId]);
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]); // Tự động cuộn khi messages thay đổi
 
+    const handleSendMessage = async () => {
+        if (newMessage.trim() === "") return;
 
-const handleSendMessage = async () => {
-    if (newMessage.trim() === "") return;
+        setLoading(true);
 
-    setLoading(true);
-
-    // Gửi tin nhắn của người dùng ngay lập tức
-    const userMessage = {
-        id: `user-${Date.now()}`,
-        messageContent: newMessage,
-        senderType: "User",
-    };
-
-    // Cập nhật tin nhắn người dùng vào state ngay lập tức
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-    try {
-        // Lưu tin nhắn của người dùng vào cơ sở dữ liệu
-        const userMessageResponse = await createMessages(chatId, newMessage, "User");
-        if (userMessageResponse && userMessageResponse.id) {
-            // Cập nhật lại tin nhắn người dùng khi có phản hồi từ server
-            setMessages((prevMessages) => prevMessages.map(msg =>
-                msg.id === userMessage.id ? userMessageResponse : msg
-            ));
-        }
-
-        // Gửi tin nhắn bot ngay lập tức
-        const botMessage = {
-            id: `bot-${Date.now()}`,
-            messageContent: "...", // Placeholder message, sẽ cập nhật sau
-            senderType: "Bot",
+        const userMessage = {
+            id: `user-${Date.now()}`,
+            messageContent: newMessage,
+            senderType: "User",
         };
 
-        // Cập nhật tin nhắn Bot vào state ngay lập tức
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-        // Lấy phản hồi từ chatbot API
-        const botMessageResponse = await getChatbotResponse(newMessage);
-        if (botMessageResponse) {
-            // Cập nhật tin nhắn Bot sau khi nhận phản hồi
-            const updatedBotMessage = { ...botMessage, messageContent: botMessageResponse };
-
-            // Cập nhật lại tin nhắn của Bot trong state để hiển thị ngay lập tức
-            setMessages((prevMessages) => prevMessages.map(msg =>
-                msg.id === botMessage.id ? updatedBotMessage : msg
-            ));
-
-            // Lưu tin nhắn của bot vào cơ sở dữ liệu
-            const botMessageSaved = await createMessages(chatId, botMessageResponse, "Bot");
-            if (botMessageSaved && botMessageSaved.id) {
-                // Cập nhật lại tin nhắn Bot khi có phản hồi từ server
+        try {
+            const userMessageResponse = await createMessages(chatId, newMessage, "User");
+            if (userMessageResponse && userMessageResponse.id) {
                 setMessages((prevMessages) => prevMessages.map(msg =>
-                    msg.id === updatedBotMessage.id ? botMessageSaved : msg
+                    msg.id === userMessage.id ? userMessageResponse : msg
                 ));
             }
-        }
-    } catch (error) {
-        console.error("[ChatWindow] Error sending message", error);
-    } finally {
-        setLoading(false);
-        setNewMessage(""); // Reset the input field after sending the message
-    }
-};
 
+            const botMessage = {
+                id: `bot-${Date.now()}`,
+                messageContent: "...",
+                senderType: "Bot",
+            };
+
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+            const botMessageResponse = await getChatbotResponse(newMessage);
+            if (botMessageResponse) {
+                const updatedBotMessage = { ...botMessage, messageContent: botMessageResponse };
+
+                setMessages((prevMessages) => prevMessages.map(msg =>
+                    msg.id === botMessage.id ? updatedBotMessage : msg
+                ));
+
+                const botMessageSaved = await createMessages(chatId, botMessageResponse, "Bot");
+                if (botMessageSaved && botMessageSaved.id) {
+                    setMessages((prevMessages) => prevMessages.map(msg =>
+                        msg.id === updatedBotMessage.id ? botMessageSaved : msg
+                    ));
+                }
+            }
+        } catch (error) {
+            console.error("[ChatWindow] Error sending message", error);
+        } finally {
+            setLoading(false);
+            setNewMessage("");
+        }
+    };
 
     const getChatbotResponse = async (message: string) => {
         try {
-            const apiKey = "AIzaSyBpwEbwSuVb1Aod6FNnoPVVOh53oRFZ3wU";  // Replace with actual API key
+            const apiKey = "AIzaSyBpwEbwSuVb1Aod6FNnoPVVOh53oRFZ3wU";
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-002:generateContent?key=${apiKey}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `User message: "${message}"\n\nPlease respond in Japanese language only. Make sure to use natural Japanese expressions and appropriate levels of formality.`
-                        }]
-                    }]
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: `User message: "${message}"` }] }] })
             });
 
             const data = await response.json();
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                return "申し訳ありませんが、現在応答を処理できません。"; // Default error message
-            }
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "応答を処理できません。";
         } catch (error) {
             console.error("Error with chatbot API:", error);
-            return "エラーが発生しました。"; // Return error message
+            return "エラーが発生しました。";
         }
     };
 
     const getMessageStyle = (senderType: string) => {
         return senderType === "User"
-            ? "bg-blue-500 text-white self-end rounded-l-lg" // User message on the right side
-            : "bg-gray-400 text-white self-start rounded-r-lg"; // Bot message on the left side
+            ? "bg-blue-500 text-white self-end rounded-lg shadow-lg p-3 max-w-xs break-words"
+            : "bg-gray-200 text-black self-start rounded-lg shadow-lg p-3 max-w-xs break-words";
     };
 
     return (
-        <div className="flex flex-col w-full max-w-3xl mx-auto bg-white shadow-xl rounded-xl border border-gray-300">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 rounded-t-xl">
-                <h2 className="text-2xl font-semibold">Chat with Support</h2>
+        <div className="flex flex-col w-full max-w-3xl mx-auto bg-gray-100 shadow-md rounded-xl border border-gray-200">
+            <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white p-6 rounded-t-xl">
+                <h2 className="text-2xl font-semibold">Support Chat</h2>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 rounded-b-xl">
-                {/* Render messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white rounded-b-xl max-h-[500px]">
                 {messages.map((message) => (
                     <div
                         key={message.id}
-                        className={`flex p-3 max-w-[80%] ${getMessageStyle(message.senderType)} mb-2`}
+                        className={`flex ${message.senderType === "User" ? "justify-end" : "justify-start"} mb-2`}
                     >
-                        <p className="text-sm leading-relaxed">{message.messageContent}</p>
+                        <div className={getMessageStyle(message.senderType)}>
+                            <p className="text-sm leading-relaxed">{message.messageContent}</p>
+                        </div>
                     </div>
                 ))}
+                <div ref={messagesEndRef} /> {/* Thêm ref để cuộn đến đây */}
             </div>
 
-            <div className="bg-gray-100 p-4 rounded-b-xl flex items-center space-x-3">
+            <div className="bg-gray-200 p-4 rounded-b-xl flex items-center space-x-3">
                 <input
                     type="text"
-                    className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="flex-1 p-3 rounded-full border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     disabled={loading}
@@ -166,7 +147,7 @@ const handleSendMessage = async () => {
                 />
                 <button
                     onClick={handleSendMessage}
-                    className={`bg-blue-500 text-white p-3 rounded-lg disabled:opacity-50`}
+                    className="bg-blue-500 text-white p-3 rounded-full shadow-md hover:bg-blue-600 transition-colors duration-200 disabled:opacity-50"
                     disabled={loading}
                 >
                     Send
