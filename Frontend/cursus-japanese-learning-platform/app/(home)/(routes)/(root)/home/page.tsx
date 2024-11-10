@@ -1,60 +1,66 @@
+// Home.tsx
 "use client";
 
-import { Suspense, useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { isLoggedIn } from "@/lib/login-check";
 import SearchInput from "@/components/search-input";
-import Loader from "@/app/components/Loader";
+import { isLoggedIn } from "@/lib/login-check";
+
 
 const Home = () => {
-  const [searchResults, setSearchResults] = useState<any>(null);
-  const [initState, setInitState] = useState('');
   const token = Cookies.get("jwtToken");
+  const [searchResults, setSearchResults] = useState<any>(null);
 
+  // Check for login state
   if (token) {
     isLoggedIn();
   }
 
-  const handleSearchResults = (data: any) => {
-    console.log("Fetched data:", data);
-    setSearchResults(data);
-  };
+  useEffect(() => {
+    // Custom event listener for search updates
+    const handleSearchUpdate = (event: any) => {
+      const data = event.detail;
+      setSearchResults(data); // Update search results state
+    };
+
+    // Listen for the custom searchUpdated event
+    window.addEventListener("searchUpdated", handleSearchUpdate);
+
+    // Cleanup the listener on unmount
+    return () => {
+      window.removeEventListener("searchUpdated", handleSearchUpdate);
+    };
+  }, []);
 
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">
-        <SearchInput onSearch={handleSearchResults} />
+        {/* Pass handleSearchResults to SearchInput to update searchResults */}
+        {/* <SearchInput /> */}
       </div>
       <div className="p-6 space-y-4">
         {/* Display the fetched search results */}
         {searchResults ? (
-          searchResults.data ? (
-            <div>
-              <h3>Translation Result:</h3>
-              <p><strong>Word:</strong> {searchResults.word}</p>
-              <p><strong>Meaning:</strong> {searchResults.meaning}</p>
+          <div>
+            <p className="text-lg font-medium mb-4">
+              {/* flag */}
+              <p></p>
+              Search results <strong>{searchResults.word}</strong>
+            </p>
+            <div className="flex gap-3">
+              <div className="bg-white p-4 rounded-lg shadow-md space-y-2 flex-grow">
+                <p className="text-sm text-gray-700">{searchResults.word}</p>
+                <p className="text-sm text-gray-700">Meaning: {searchResults.meaning}</p>
+              </div>
+              <img width={200} src="https://th.bing.com/th/id/R.aff4ceb15704422ff22c17caa5529307?rik=s%2faef%2fupI7VcJQ&pid=ImgRaw&r=0" />
             </div>
-          ) : (
-            <p>No valid translation data found.</p>
-          )
+          </div>
         ) : (
-          <p>No results found.</p>
+          <p>No results yet</p>
         )}
       </div>
     </>
   );
 };
 
-const HomePage = () => (
-  <Suspense
-    fallback={
-      <div className="flex flex-col items-center justify-center h-screen">
-        <Loader />
-      </div>
-    }
-  >
-    <Home />
-  </Suspense>
-);
-
-export default HomePage;
+export default Home;
