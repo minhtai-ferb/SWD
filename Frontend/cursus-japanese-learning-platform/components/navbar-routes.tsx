@@ -62,12 +62,21 @@ const NavbarRoutes = () => {
 
   if (!isClient) return null;
 
+  const handleSearch = (data: any) => {
+    // Save search data to localStorage
+    localStorage.setItem("searchData", JSON.stringify(data));
+
+    // Trigger a custom event to notify other components
+    const event = new CustomEvent("searchUpdated", { detail: data });
+    window.dispatchEvent(event);
+  };
+
   return (
     <>
       <Toaster />
       {isSearchPage && (
         <div className="hidden md:block">
-          <SearchInput onSearch={(data) => console.log(data)} />
+          <SearchInput onSearch={handleSearch} />
         </div>
       )}
       <div className="flex gap-x-2 ml-auto align-middle items-center">
