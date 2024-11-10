@@ -11,6 +11,7 @@ import {
   School,
   Wallet2,
   WalletCards,
+  MessagesSquare,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import SidebarItem from "./sidebar-item";
@@ -39,6 +40,11 @@ const userRoutes = [
     icon: Wallet2,
     label: "Payments",
     href: "/payments",
+  },
+  {
+    icon: MessagesSquare,
+    label: "Chat Messages",
+    href: "/messages",
   }
 ];
 
