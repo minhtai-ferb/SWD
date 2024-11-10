@@ -2,16 +2,19 @@
 import React, { useState, useEffect } from "react";
 import ChatWindow from "./components/ChatWindow";
 import { createChatForUser, getChatByUserId } from "@/actions/chat";
+import ChatSidebar from "./components/ChatSidebar";
 
 const Page = () => {
   const [chatId, setChatId] = useState<string | null>(null);
-  
- 
-  const userData = localStorage.getItem("userData");
-  const userId = userData ? JSON.parse(userData).id : null;  
+  const [userId, setUserId] = useState<string | null>(null);
 
-  console.log("userId", userId);
-  console.log("LocalStorage", localStorage)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem("userData");
+      const parsedUserId = userData ? JSON.parse(userData).id : null;
+      setUserId(parsedUserId);
+    }
+  }, []);
 
   useEffect(() => {
     if (!userId) {
@@ -39,6 +42,7 @@ const Page = () => {
 
   return (
     <div className="flex h-screen">
+      <ChatSidebar onSelectChat={setChatId} userId={userId || ""} />
       <div className="flex-1 p-6">
         {chatId ? (
           <ChatWindow chatId={chatId} />

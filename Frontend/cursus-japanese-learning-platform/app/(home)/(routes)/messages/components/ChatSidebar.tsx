@@ -1,25 +1,67 @@
-// import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getChatByUserId } from "@/actions/chat";
 
-// interface ChatSidebarProps {
-//     chats: Array<{ id: string; name: string }>;
-//     onSelectChat: (chatId: string) => void;
-// }
+type Chat = {
+    id: string;
+    createdTime: string;
+};
 
-// export default function ChatSidebar({ chats, onSelectChat }: ChatSidebarProps) {
-//     return (
-//         <div className="w-1/4 bg-gray-800 text-white p-4">
-//             <h2 className="text-lg font-bold mb-4">Chat History</h2>
-//             <ul>
-//                 {chats.map((chat) => (
-//                     <li
-//                         key={chat.id}
-//                         onClick={() => onSelectChat(chat.id)}
-//                         className="cursor-pointer p-2 hover:bg-gray-700"
-//                     >
-//                         {chat.name}
-//                     </li>
-//                 ))}
-//             </ul>
-//         </div>
-//     );
-// }
+type ChatSidebarProps = {
+    onSelectChat: (chatId: string) => void;
+    userId: string;
+};
+
+const ChatSidebar: React.FC<ChatSidebarProps> = ({ onSelectChat, userId }) => {
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchChats = async () => {
+            setLoading(true);
+            try {
+                const response = await getChatByUserId(userId);
+                if (Array.isArray(response.data)) {
+                    const sortedChats = response.data.sort((a: Chat, b: Chat) => {
+                        const timeA = new Date(a.createdTime).getTime();
+                        const timeB = new Date(b.createdTime).getTime();
+                        return timeA - timeB; 
+                    });
+                    setChats(sortedChats);  
+                } else {
+                    console.error("Expected an array of chats, but received:", response);
+                }
+            } catch (error) {
+                console.error("Error fetching chats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChats();
+    }, [userId]);
+
+    return (
+        <div className="w-64 bg-gray-800 text-white h-full p-4 space-y-4 overflow-y-auto">
+            <h2 className="text-lg font-semibold">Chats</h2>
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                chats.length > 0 ? (
+                    chats.map((chat) => (
+                        <button
+                            key={chat.id}
+                            onClick={() => onSelectChat(chat.id)}
+                            className="flex flex-col items-start bg-gray-700 p-3 rounded-lg hover:bg-gray-600 w-full text-left"
+                        >
+                            <span className="font-bold text-sm">{chat.id}</span>
+                        </button>
+                    ))
+                ) : (
+                    <p>No chats available</p>
+                )
+            )}
+        </div>
+    );
+};
+
+export default ChatSidebar;

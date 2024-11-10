@@ -15,7 +15,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null); // Thêm ref cho cuối danh sách tin nhắn
+    const messagesEndRef = useRef<HTMLDivElement>(null); 
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -39,7 +39,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId }) => {
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]); // Tự động cuộn khi messages thay đổi
+    }, [messages]); 
 
     const handleSendMessage = async () => {
         if (newMessage.trim() === "") return;
