@@ -48,4 +48,30 @@ const updateUser = async (userId: string, userData : { id: string , fullName: st
   }
 }
 
-export { getUserById, uploadAvatar, getUserWithImageById, updateUser };
+const getAllUser = async () => {
+  try {
+    const response = await api.get("/api/user");
+    return response.data;
+  } catch (error: any) {
+    console.log("[ACTIONS_GET_ALL_USER]", error);
+    return true;
+  }
+}
+
+const updateUserAdmin = async (id: string, isDelete: boolean, isActive: boolean) => {
+  try {
+    const response = await api.put(`/api/user/admin/${id}`, {
+      params: {
+        isDelete: isDelete,
+        isActive: isActive
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.log("[ACTIONS_UPDATE_USER_ADMIN]", error);
+    return true;
+  }
+};
+
+
+export { getUserById, uploadAvatar, getUserWithImageById, updateUser, getAllUser, updateUserAdmin };

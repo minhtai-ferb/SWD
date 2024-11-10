@@ -61,8 +61,8 @@ const adminRoutes = [
   },
   {
     icon: GraduationCap,
-    label: "Student Management",
-    href: "/admin/student",
+    label: "User Management",
+    href: "/admin/user",
   },
   // {
   //   icon: School,
